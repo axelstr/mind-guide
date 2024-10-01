@@ -1,0 +1,53 @@
+# Knowledge Database
+
+## Bipolar Disorder: Diagnosis and Treatment
+
+### Diagnosis
+
+Bipolar disorder is characterized by alternating episodes of mania (or hypomania) and depression. Diagnosis is based on the DSM-5 criteria:
+
+1. Manic Episode:
+   - Elevated, expansive, or irritable mood
+   - Increased goal-directed activity or energy
+   - Lasting at least 1 week (or any duration if hospitalization is necessary)
+
+2. Hypomanic Episode:
+   - Similar to manic episode but less severe
+   - Lasting at least 4 consecutive days
+
+3. Major Depressive Episode:
+   - Depressed mood or loss of interest/pleasure
+   - Lasting at least 2 weeks
+
+Bipolar I: At least one manic episode
+Bipolar II: At least one hypomanic episode and one major depressive episode
+
+### Treatment
+
+1. Mood Stabilizers:
+   - Lithium (e.g., Lithobid): 600-1200 mg/day
+   - Valproic acid (e.g., Depakene): 750-1750 mg/day
+   - Carbamazepine (e.g., Tegretol): 400-1600 mg/day
+   - Lamotrigine (e.g., Lamictal): 100-400 mg/day
+
+2. Antipsychotics:
+   - Quetiapine (e.g., Seroquel): 300-800 mg/day
+   - Olanzapine (e.g., Zyprexa): 5-20 mg/day
+   - Risperidone (e.g., Risperdal): 1-6 mg/day
+   - Aripiprazole (e.g., Abilify): 10-30 mg/day
+
+3. Antidepressants (used cautiously, risk of triggering mania):
+   - SSRIs: Fluoxetine, Sertraline, Escitalopram
+   - SNRIs: Venlafaxine, Duloxetine
+
+4. Psychotherapy:
+   - Cognitive Behavioral Therapy (CBT)
+   - Interpersonal and Social Rhythm Therapy (IPSRT)
+   - Family-Focused Therapy
+
+5. Lifestyle modifications:
+   - Regular sleep schedule
+   - Stress management techniques
+   - Avoiding alcohol and recreational drugs
+
+Treatment plans should be individualized based on the patient's specific symptoms, episode type, and response to medications. Regular monitoring and adjustments are crucial for optimal management.
