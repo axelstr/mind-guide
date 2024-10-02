@@ -83,14 +83,14 @@ const App: React.FC = () => {
         </form>
 
         {estimation && (
-          <div style={{ marginTop: '30px' }}>
+          <div style={{ marginTop: '30px', whiteSpace: 'pre-wrap' }}>
             <Typography.Title level={4}>Estimation</Typography.Title>
             <Typography.Paragraph>{estimation}</Typography.Paragraph>
           </div>
         )}
 
         {plan && (
-          <div style={{ marginTop: '30px' }}>
+          <div style={{ marginTop: '30px', whiteSpace: 'pre-wrap' }}>
             <Typography.Title level={4}>Plan</Typography.Title>
             <Typography.Paragraph>{plan}</Typography.Paragraph>
           </div>
