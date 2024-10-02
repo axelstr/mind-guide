@@ -74,7 +74,7 @@ const App: React.FC = () => {
             rows={4}
             placeholder="Provider Input"
             value={providerInput}
-            onChange={(e) => setProviderInput(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setProviderInput(e.target.value)}
             style={{ marginTop: '20px', marginBottom: '20px' }}
           />
           <Button type="primary" htmlType="submit" disabled={isLoading}>
