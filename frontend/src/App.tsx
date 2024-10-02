@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Typography, Upload, Button, Input, Spin, message } from 'antd';
+import { Layout, Menu, Typography, Card, Upload, Button, Input, Spin, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import 'antd/dist/reset.css';  // Import Ant Design styles
 
@@ -61,7 +61,7 @@ const App: React.FC = () => {
           <Upload
             beforeUpload={() => false} // Prevent automatic upload
             onChange={handleFileChange}
-            accept=".txt"
+            accept=".md"
           >
             <Button icon={<UploadOutlined />}>Upload Patient Record</Button>
           </Upload>
@@ -83,17 +83,17 @@ const App: React.FC = () => {
         </form>
 
         {estimation && (
-          <div style={{ marginTop: '30px', whiteSpace: 'pre-wrap' }}>
+          <Card style={{ marginTop: '30px', borderRadius: '8px' }}>
             <Typography.Title level={4}>Estimation</Typography.Title>
-            <Typography.Paragraph>{estimation}</Typography.Paragraph>
-          </div>
+            <Typography.Paragraph style={{ whiteSpace: 'pre-wrap' }}>{estimation}</Typography.Paragraph>
+          </Card>
         )}
-
+        
         {plan && (
-          <div style={{ marginTop: '30px', whiteSpace: 'pre-wrap' }}>
+          <Card style={{ marginTop: '30px', borderRadius: '8px' }}>
             <Typography.Title level={4}>Plan</Typography.Title>
-            <Typography.Paragraph>{plan}</Typography.Paragraph>
-          </div>
+            <Typography.Paragraph style={{ whiteSpace: 'pre-wrap' }}>{plan}</Typography.Paragraph>
+          </Card>
         )}
       </Content>
     </Layout>
