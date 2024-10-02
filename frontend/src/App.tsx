@@ -1,45 +1,27 @@
 import React, { useState } from 'react';
-import { 
-  AppBar, 
-  Toolbar, 
-  Typography, 
-  Container, 
-  Paper, 
-  TextField, 
-  Button, 
-  Box,
-  CircularProgress
-} from '@mui/material';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Layout, Menu, Typography, Upload, Button, Input, Spin, message } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import 'antd/dist/reset.css';  // Import Ant Design styles
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-  },
-});
+const { Header, Content } = Layout;
+const { TextArea } = Input;
 
 const App: React.FC = () => {
   const [patientRecord, setPatientRecord] = useState<string>('');
   const [providerInput, setProviderInput] = useState<string>('');
   const [estimation, setEstimation] = useState<string>('');
-  const [plan, setPlan] = useState<string>('');
+  const [plan, setPlan] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const text = e.target?.result;
-        setPatientRecord(typeof text === 'string' ? text : '');
-      };
-      reader.readAsText(file);
-    }
+  const handleFileChange = (info: any) => {
+    const file = info.file.originFileObj;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target?.result;
+      setPatientRecord(typeof text === 'string' ? text : '');
+      message.success(`${info.file.name} uploaded successfully`);
+    };
+    reader.readAsText(file);
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -57,71 +39,60 @@ const App: React.FC = () => {
       setEstimation(data.estimation);
       setPlan(data.plan);
     } catch (error) {
+      message.error('Error processing the data');
       console.error('Error:', error);
     }
     setIsLoading(false);
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6">Mind-Guide</Typography>
-        </Toolbar>
-      </AppBar>
-      <Container maxWidth="md" sx={{ mt: 4 }}>
-        <Paper elevation={3} sx={{ p: 3 }}>
-          <form onSubmit={handleSubmit}>
-            <Box mb={2}>
-              <input
-                accept=".txt"
-                style={{ display: 'none' }}
-                id="raised-button-file"
-                type="file"
-                onChange={handleFileChange}
-              />
-              <label htmlFor="raised-button-file">
-                <Button variant="contained" component="span">
-                  Upload Patient Record
-                </Button>
-              </label>
-              {patientRecord && (
-                <Typography variant="body2" sx={{ mt: 1 }}>
-                  File uploaded: {patientRecord.slice(0, 20)}...
-                </Typography>
-              )}
-            </Box>
-            <TextField
-              fullWidth
-              multiline
-              rows={4}
-              variant="outlined"
-              label="Provider Input"
-              value={providerInput}
-              onChange={(e) => setProviderInput(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-            <Button type="submit" variant="contained" color="primary" disabled={isLoading}>
-              {isLoading ? <CircularProgress size={24} /> : 'Process'}
-            </Button>
-          </form>
-        </Paper>
-        
+    <Layout>
+      <Header>
+        <Typography.Title style={{ color: 'white', margin: 0, textAlign: 'center' }} level={3}>
+          Mind-Guide
+        </Typography.Title>
+      </Header>
+      <Content style={{ padding: '50px', maxWidth: '800px', margin: 'auto' }}>
+        <form onSubmit={handleSubmit}>
+          <Upload
+            beforeUpload={() => false} // Prevent automatic upload
+            onChange={handleFileChange}
+            accept=".txt"
+          >
+            <Button icon={<UploadOutlined />}>Upload Patient Record</Button>
+          </Upload>
+          {patientRecord && (
+            <Typography.Paragraph>
+              File uploaded: {patientRecord.slice(0, 20)}...
+            </Typography.Paragraph>
+          )}
+          <TextArea
+            rows={4}
+            placeholder="Provider Input"
+            value={providerInput}
+            onChange={(e) => setProviderInput(e.target.value)}
+            style={{ marginTop: '20px', marginBottom: '20px' }}
+          />
+          <Button type="primary" htmlType="submit" disabled={isLoading}>
+            {isLoading ? <Spin size="small" /> : 'Process'}
+          </Button>
+        </form>
+
         {estimation && (
-          <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
-            <Typography variant="h6" gutterBottom>Estimation</Typography>
-            <Typography variant="body1">{estimation}</Typography>
-          </Paper>
+          <div style={{ marginTop: '30px' }}>
+            <Typography.Title level={4}>Estimation</Typography.Title>
+            <Typography.Paragraph>{estimation}</Typography.Paragraph>
+          </div>
         )}
-        
+
         {plan && (
-          <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
-            <Typography variant="h6" gutterBottom>Plan</Typography>
-            <Typography variant="body1">{plan}</Typography>
-          </Paper>
+          <div style={{ marginTop: '30px' }}>
+            <Typography.Title level={4}>Plan</Typography.Title>
+            <Typography.Paragraph>{plan}</Typography.Paragraph>
+          </div>
         )}
-      </Container>
-    </ThemeProvider>
+      </Content>
+    </Layout>
   );
 };
 
