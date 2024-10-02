@@ -14,14 +14,18 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleFileChange = (info: any) => {
-    const file = info.file.originFileObj;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const text = e.target?.result;
-      setPatientRecord(typeof text === 'string' ? text : '');
-      message.success(`${info.file.name} uploaded successfully`);
-    };
-    reader.readAsText(file);
+    const file = info.file.originFileObj || info.file; 
+    if (file instanceof Blob) {
+      const reader = new FileReader();
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        const text = e.target?.result;
+        setPatientRecord(typeof text === 'string' ? text : '');
+        message.success(`${info.file.name} uploaded successfully`);
+      };
+      reader.readAsText(file);
+    } else {
+      message.error('Failed to read the file. Please try again.');
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
