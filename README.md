@@ -33,6 +33,8 @@ Mind-Guide is a full-stack application for assisting in the diagnosis and treatm
    npm install
    ```
 
+4. Create an OpenAI API key. [See documentation](https://platform.openai.com/docs/quickstart).
+
 ## Running the Application
 
 Using docker is easiest. However, for development, it's recommended to start the frontend and backend separately without docker so they can be iterated on and restarted independently.
@@ -45,7 +47,7 @@ This approach only requires a dependency to `docker-compose`.
 
 1. To start the application:
    ```
-   docker-compose up --build
+   OPENAI_API_KEY={your_openai_api_key} docker-compose up --build
    ```
 
 2. To close the application:
