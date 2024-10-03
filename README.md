@@ -1,12 +1,16 @@
 # Mind-Guide
 
-Mind-Guide is a full-stack application for assisting in the diagnosis and treatment planning for mental health..
+Mind-Guide is a full-stack application for assisting in the diagnosis and treatment planning for psychiatric care.
+
+## Demo
+
+![Demo](demo.gif)
 
 ## Project Structure
 
 - `backend/`: Go backend application.
 - `frontend/`: React frontend application.
-- `knowledge.txt`: Knowledge database.
+  - For now, the backend also contains the knowledge and patients database.
 - `Dockerfile`: Docker configuration for building and running the application.
 
 ## Setup
@@ -31,19 +35,27 @@ Mind-Guide is a full-stack application for assisting in the diagnosis and treatm
 
 ## Running the Application
 
+Using docker is easiest. However, for development, it's recommended to start the frontend and backend separately without docker so they can be iterated on and restarted independently.
+
+The application will be available at `http://localhost:3000`.
+
 ### Using Docker
 
-1. To start the service:
+This approach only requires a dependency to `docker-compose`.
+
+1. To start the application:
    ```
    docker-compose up --build
    ```
 
-2. To close the service:
+2. To close the application:
    ```
    docker-compose down
    ```
 
 ### Without Docker
+
+This approach requires both local `go` and `npm` installations.
 
 1. Start the backend:
    ```
@@ -56,5 +68,3 @@ Mind-Guide is a full-stack application for assisting in the diagnosis and treatm
    cd frontend
    npm start
    ```
-
-The application will be available at `http://localhost:3000`.
