@@ -7,8 +7,15 @@ import (
 
 	"github.com/axelstr/mind-guide/backend/internal/estimation"
 	"github.com/axelstr/mind-guide/backend/internal/logger"
+	"github.com/axelstr/mind-guide/backend/internal/patients"
 	"github.com/axelstr/mind-guide/backend/internal/planning"
+	"github.com/axelstr/mind-guide/backend/internal/summary"
 	"github.com/gin-gonic/gin"
+)
+
+const (
+	knowledgeDBPath = "knowledge.txt"
+	patientsDir     = "patients"
 )
 
 type Input struct {
@@ -19,6 +26,12 @@ type Input struct {
 type Output struct {
 	Estimation string `json:"estimation"`
 	Plan       string `json:"plan"`
+}
+
+type Patient struct {
+	Name    string `json:"name"`
+	Summary string `json:"summary"`
+	Record  string `json:"record"`
 }
 
 func main() {
@@ -38,7 +51,8 @@ func main() {
 		c.Next()
 	})
 
-	r.POST("/process", handleProcess)
+	r.POST("/process_patient", handleProcess)
+	r.GET("/get_patients", handleGetPatients)
 
 	log.Fatal(r.Run(":8080"))
 }
@@ -53,7 +67,7 @@ func handleProcess(c *gin.Context) {
 		return
 	}
 
-	knowledgeDB, err := os.ReadFile("knowledge.txt")
+	knowledgeDB, err := os.ReadFile(knowledgeDBPath)
 	if err != nil {
 		logger.Error("Failed to read knowledge database: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read knowledge database"})
@@ -89,4 +103,31 @@ func estimatePatientStatus(patientRecord, providerInput, knowledgeDB string) (st
 
 func createActionPlan(estimation, patientRecord, providerInput, knowledgeDB string) (string, error) {
 	return planning.CreateActionPlan(estimation, patientRecord, providerInput, knowledgeDB)
+}
+
+func handleGetPatients(c *gin.Context) {
+	logger.Debug("Handling get patients request")
+
+	patientFiles, err := patients.ReadPatientFiles(patientsDir)
+	if err != nil {
+		logger.Error("Failed to read patient files: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read patient files"})
+		return
+	}
+
+	var patients []Patient
+	for id, record := range patientFiles {
+		summaryText, err := summary.Process(record)
+		if err != nil {
+			logger.Error("Failed to process summary for patient %s: %v", id, err)
+			continue
+		}
+		patients = append(patients, Patient{
+			Name:    id, // Assuming the name is the same as the ID for simplicity
+			Summary: summaryText,
+			Record:  record,
+		})
+	}
+
+	c.JSON(http.StatusOK, patients)
 }

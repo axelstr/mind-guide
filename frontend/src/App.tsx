@@ -1,101 +1,225 @@
-import React, { useState } from 'react';
-import { Layout, Menu, Typography, Card, Upload, Button, Input, Spin, message } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
-import 'antd/dist/reset.css';  // Import Ant Design styles
+import React, { useState, useEffect } from "react";
+import {
+  Row,
+  Col,
+  Layout,
+  Typography,
+  Card,
+  Button,
+  Input,
+  Spin,
+  message,
+  Modal,
+} from "antd";
+import { ProfileOutlined, LeftOutlined } from "@ant-design/icons";
+import ReactMarkdown from "react-markdown";
+import "antd/dist/reset.css"; // Import Ant Design styles
 
 const { Header, Content } = Layout;
 const { TextArea } = Input;
 
-const App: React.FC = () => {
-  const [patientRecord, setPatientRecord] = useState<string>('');
-  const [providerInput, setProviderInput] = useState<string>('');
-  const [estimation, setEstimation] = useState<string>('');
-  const [plan, setPlan] = useState<string>('')
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+interface Patient {
+  name: string;
+  summary: string;
+  record: string;
+}
 
-  const handleFileChange = (info: any) => {
-    const file = info.file.originFileObj || info.file; 
-    if (file instanceof Blob) {
-      const reader = new FileReader();
-      reader.onload = (e: ProgressEvent<FileReader>) => {
-        const text = e.target?.result;
-        setPatientRecord(typeof text === 'string' ? text : '');
-        message.success(`${info.file.name} uploaded successfully`);
-      };
-      reader.readAsText(file);
-    } else {
-      message.error('Failed to read the file. Please try again.');
-    }
+const App: React.FC = () => {
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [selectedPatientId, setSelectedPatientId] = useState<string | null>(
+    null
+  );
+  const [providerInput, setProviderInput] = useState<string>("");
+  const [isLoadingPatients, setIsLoadingPatients] = useState<boolean>(false);
+  const [isLoadingSubmit, setIsLoadingSubmit] = useState<boolean>(false);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [modalContent, setModalContent] = useState<string>("");
+  const [estimation, setEstimation] = useState<string>("");
+  const [plan, setPlan] = useState<string>("");
+
+  useEffect(() => {
+    const fetchPatients = async () => {
+      setIsLoadingPatients(true);
+      try {
+        const response = await fetch("http://localhost:8080/get_patients");
+        const data = await response.json();
+        setPatients(data);
+      } catch (error) {
+        message.error("Error fetching patients");
+        console.error("Error:", error);
+      }
+      setIsLoadingPatients(false);
+    };
+
+    fetchPatients();
+  }, []);
+
+  const handleShowMore = (record: string) => {
+    setModalContent(record);
+    setIsModalVisible(true);
+  };
+
+  const handleSelect = (id: string) => {
+    setSelectedPatientId(id);
+    // This is a bit too verbose.
+    // message.success("Patient selected");
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    setIsLoading(true);
+    if (!selectedPatientId) {
+      message.error("Please select a patient");
+      return;
+    }
+    setIsLoadingSubmit(true);
     try {
-      const response = await fetch('http://localhost:8080/process', {
-        method: 'POST',
+      const response = await fetch("http://localhost:8080/process_patient", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ patientRecord, providerInput }),
+        body: JSON.stringify({ id: selectedPatientId, providerInput }),
       });
       const data = await response.json();
       setEstimation(data.estimation);
       setPlan(data.plan);
     } catch (error) {
-      message.error('Error processing the data');
-      console.error('Error:', error);
+      message.error("Error processing the data");
+      console.error("Error:", error);
     }
-    setIsLoading(false);
+    setIsLoadingSubmit(false);
   };
 
   return (
     <Layout>
       <Header>
-        <Typography.Title style={{ color: 'white', margin: 0, textAlign: 'center' }} level={3}>
-          Mind-Guide
+        <Typography.Title
+          style={{
+            color: "white",
+            margin: 0,
+            textAlign: "center",
+            marginTop: "10px",
+          }}
+          level={3}
+        >
+          <ProfileOutlined style={{ fontSize: "24px", marginRight: "12px" }} />
+          MindGuide
+          <ProfileOutlined style={{ fontSize: "24px", marginLeft: "12px" }} />
         </Typography.Title>
       </Header>
-      <Content style={{ padding: '50px', maxWidth: '800px', margin: 'auto' }}>
+      {isLoadingPatients ? (
+        <Spin size="large" style={{ display: "block", margin: "50px auto" }} />
+      ) : (
+        <Row gutter={[16, 16]} justify="center" style={{ marginTop: "20px" }}>
+          {patients.map((patient) => (
+            <Col key={patient.name} xs={24} sm={12} md={8}>
+              <Card
+                title={
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    {patient.name}
+                    <img
+                      src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                      alt="profile"
+                      style={{
+                        width: "40px",
+                        height: "40px",
+                        borderRadius: "15%",
+                        objectFit: "cover",
+                        marginLeft: "10px",
+                      }}
+                    />
+                  </div>
+                }
+                style={{
+                  borderRadius: "8px",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  borderColor: selectedPatientId === patient.name ? "blue" : "",
+                }}
+              >
+                <div
+                  style={{
+                    flexGrow: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Typography.Paragraph>{patient.summary}</Typography.Paragraph>
+                  <div
+                    style={{
+                      marginTop: "auto",
+                      display: "flex",
+                      justifyContent: "flex-end",
+                    }}
+                  >
+                    <Button
+                      onClick={() => handleShowMore(patient.record)}
+                      style={{ marginRight: "10px" }}
+                    >
+                      Show more
+                    </Button>
+                    <Button
+                      type="primary"
+                      onClick={() => handleSelect(patient.name)}
+                    >
+                      Select
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      )}
+      <Content style={{ padding: "50px", maxWidth: "800px", margin: "auto" }}>
         <form onSubmit={handleSubmit}>
-          <Upload
-            beforeUpload={() => false} // Prevent automatic upload
-            onChange={handleFileChange}
-            accept=".md"
-          >
-            <Button icon={<UploadOutlined />}>Upload Patient Record</Button>
-          </Upload>
-          {patientRecord && (
-            <Typography.Paragraph>
-              File uploaded: {patientRecord.slice(0, 20)}...
-            </Typography.Paragraph>
-          )}
           <TextArea
             rows={4}
             placeholder="Provider Input"
             value={providerInput}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setProviderInput(e.target.value)}
-            style={{ marginTop: '20px', marginBottom: '20px' }}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+              setProviderInput(e.target.value)
+            }
+            style={{ marginTop: "20px", marginBottom: "20px" }}
           />
-          <Button type="primary" htmlType="submit" disabled={isLoading}>
-            {isLoading ? <Spin size="small" /> : 'Process'}
+          <Button type="primary" htmlType="submit" disabled={isLoadingSubmit}>
+            {isLoadingSubmit ? <Spin size="small" /> : "Process"}
           </Button>
         </form>
-
         {estimation && (
-          <Card style={{ marginTop: '30px', borderRadius: '8px' }}>
-            <Typography.Title level={4}>Estimation</Typography.Title>
-            <Typography.Paragraph style={{ whiteSpace: 'pre-wrap' }}>{estimation}</Typography.Paragraph>
+          <Card
+            style={{ marginTop: "30px", borderRadius: "8px" }}
+            title="Estimation"
+          >
+            <ReactMarkdown>{estimation}</ReactMarkdown>
           </Card>
         )}
-        
+
         {plan && (
-          <Card style={{ marginTop: '30px', borderRadius: '8px' }}>
-            <Typography.Title level={4}>Plan</Typography.Title>
-            <Typography.Paragraph style={{ whiteSpace: 'pre-wrap' }}>{plan}</Typography.Paragraph>
+          <Card style={{ marginTop: "30px", borderRadius: "8px" }} title="Plan">
+            <ReactMarkdown>{plan}</ReactMarkdown>
           </Card>
         )}
       </Content>
+      <Modal
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={[
+          <Button key="close" onClick={() => setIsModalVisible(false)}>
+            Close
+          </Button>,
+        ]}
+      >
+        <ReactMarkdown>{modalContent}</ReactMarkdown>
+      </Modal>
     </Layout>
   );
 };
