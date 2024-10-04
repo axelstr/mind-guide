@@ -76,8 +76,7 @@ This approach requires both local `go` and `npm` installations.
 
 ## TODO
 
-- [ ] Handle in frontend if the user hasn't configured an API key yet.
-  - Currently, it just crashes.
+- [x] Handle in frontend if the user hasn't configured an API key yet.
 - [ ] Dependency inject language model to backend components.
   - To make the components language model agnostic, the client should be dependency injected to fit a shared interface.
 - [ ] Add unit tests for backend.

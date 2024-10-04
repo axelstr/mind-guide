@@ -10,8 +10,9 @@ import {
   Spin,
   message,
   Modal,
+  Alert,
 } from "antd";
-import { ProfileOutlined, LeftOutlined } from "@ant-design/icons";
+import { ProfileOutlined } from "@ant-design/icons";
 import ReactMarkdown from "react-markdown";
 import "antd/dist/reset.css"; // Import Ant Design styles
 
@@ -30,6 +31,7 @@ const App: React.FC = () => {
     null
   );
   const [providerInput, setProviderInput] = useState<string>("");
+  const [alert, setAlert] = useState<string>("");
   const [isLoadingPatients, setIsLoadingPatients] = useState<boolean>(false);
   const [isLoadingSubmit, setIsLoadingSubmit] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
@@ -43,10 +45,21 @@ const App: React.FC = () => {
       try {
         const response = await fetch("http://localhost:8080/get_patients");
         const data = await response.json();
+        if (data == null) {
+          setAlert(
+            "Please provide the OpenAI API key in the backend for the app to work properly. Check the README for more information."
+          );
+          setIsLoadingPatients(false);
+          return;
+        }
         setPatients(data);
+        setAlert("");
       } catch (error) {
-        message.error("Error fetching patients");
-        console.error("Error:", error);
+        setAlert(
+          "Could not communicate with backend. Make sure it is running. Check the README for more information."
+        );
+        setIsLoadingPatients(false);
+        return;
       }
       setIsLoadingPatients(false);
     };
@@ -61,8 +74,6 @@ const App: React.FC = () => {
 
   const handleSelect = (id: string) => {
     setSelectedPatientId(id);
-    // This is a bit too verbose.
-    // message.success("Patient selected");
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -107,6 +118,9 @@ const App: React.FC = () => {
           <ProfileOutlined style={{ fontSize: "24px", marginLeft: "12px" }} />
         </Typography.Title>
       </Header>
+      {alert ? (
+        <Alert message="Error" description={alert} type="error" showIcon />
+      ) : null}
       {isLoadingPatients ? (
         <Spin size="large" style={{ display: "block", margin: "50px auto" }} />
       ) : (
