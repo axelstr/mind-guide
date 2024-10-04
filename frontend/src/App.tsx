@@ -152,7 +152,7 @@ const App: React.FC = () => {
                 }
                 style={{
                   borderRadius: "8px",
-                  height: "100%",
+                  // height: "100%",
                   display: "flex",
                   flexDirection: "column",
                   borderColor: selectedPatientId === patient.name ? "blue" : "",
