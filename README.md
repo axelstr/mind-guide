@@ -73,3 +73,16 @@ This approach requires both local `go` and `npm` installations.
    cd frontend
    npm start
    ```
+
+## TODO
+
+- [ ] Handle in frontend if the user hasn't configured an API key yet.
+  - Currently, it just crashes.
+- [ ] Dependency inject language model to backend components.
+  - To make the components language model agnostic, the client should be dependency injected to fit a shared interface.
+- [ ] Add unit tests for backend.
+  - Each step should have unit tests. This requires a mock language model that can be dependency injected.
+- [ ] Implement `Contextualizer`.
+  - The contextualizer provides the context for the judgement for the provider. This allows the provider to see the context from the knowledge database.
+- [ ] Implement `Validator`.
+  - The validator cross checks the outputs. This will likely need a language model call but this should be joined with classical methods such as regex or string comparisons.
